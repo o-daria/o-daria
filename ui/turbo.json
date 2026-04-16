@@ -3,7 +3,15 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**"],
+      "env": [
+        "GOOGLE_CLIENT_ID",
+        "VITE_API_BASE_URL",
+        "VITE_MFE_AUTH_URL",
+        "VITE_MFE_PROJECTS_URL",
+        "VITE_MFE_REPORTS_URL",
+        "VITE_MFE_CANVA_URL"
+      ]
     },
     "type-check": {
       "dependsOn": ["^build"],
