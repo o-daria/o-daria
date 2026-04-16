@@ -3,9 +3,18 @@ variable "env"                  { type = string }
 variable "aws_region"           { type = string }
 variable "s3_images_bucket"     { type = string }
 variable "s3_images_bucket_arn" { type = string }
-variable "anthropic_api_key"    { type = string; sensitive = true }
-variable "google_client_id"     { type = string; sensitive = true }
-variable "api_key"              { type = string; sensitive = true }
+variable "anthropic_api_key" {
+  type      = string
+  sensitive = true
+}
+variable "google_client_id" {
+  type      = string
+  sensitive = true
+}
+variable "api_key" {
+  type      = string
+  sensitive = true
+}
 variable "frontend_url"         { type = string }
 variable "user_data_tpl_path"   { type = string }
 
@@ -17,11 +26,11 @@ data "aws_ami" "al2023_arm" {
 
   filter {
     name   = "name"
-    values = ["al2023-ami-*-arm64"]
+    values = ["al2023-ami-*-x86_64"]
   }
   filter {
     name   = "architecture"
-    values = ["arm64"]
+    values = ["x86_64"]
   }
   filter {
     name   = "virtualization-type"
@@ -33,7 +42,7 @@ data "aws_ami" "al2023_arm" {
 
 resource "aws_security_group" "be" {
   name        = "${var.app_name}-${var.env}-be-sg"
-  description = "BE API — inbound 3300 only, all outbound"
+  description = "BE API - inbound 3300 only, all outbound"
 
   ingress {
     description = "BE API"
@@ -110,18 +119,18 @@ resource "aws_iam_instance_profile" "be" {
   role = aws_iam_role.be.name
 }
 
-# ── EC2 instance — t4g.nano (arm64, ~$3/month) ────────────────────────────────
+# ── EC2 instance — t3.micro (x86_64, free tier eligible) ─────────────────────
 
 resource "aws_instance" "be" {
   ami                    = data.aws_ami.al2023_arm.id
-  instance_type          = "t4g.nano"
+  instance_type          = "t3.micro"
   iam_instance_profile   = aws_iam_instance_profile.be.name
   vpc_security_group_ids = [aws_security_group.be.id]
 
-  # 20 GB gp3 root volume (docker images + pg_data volume)
+  # 30 GB gp3 root volume (docker images + pg_data volume)
   root_block_device {
     volume_type           = "gp3"
-    volume_size           = 20
+    volume_size           = 30
     delete_on_termination = true
     encrypted             = true
   }

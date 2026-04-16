@@ -35,3 +35,9 @@ variable "api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "frontend_url" {
+  description = "CloudFront URL injected into EC2 for CORS. Set after first apply."
+  type        = string
+  default     = ""
+}

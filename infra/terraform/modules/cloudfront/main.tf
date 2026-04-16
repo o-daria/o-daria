@@ -3,7 +3,11 @@ variable "env"                 { type = string }
 variable "s3_bucket_id"        { type = string }
 variable "s3_bucket_domain"    { type = string }
 variable "oac_id"              { type = string }
-variable "external_api_domain" { type = string }
+variable "external_api_domain" {
+  type    = string
+  default = "*"
+  description = "API domain for CSP connect-src. Defaults to wildcard; tighten after EC2 is provisioned."
+}
 
 # ── Security headers policy ───────────────────────────────────────────────────
 
