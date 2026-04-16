@@ -1,0 +1,80 @@
+# Local full-stack preview — mirrors production routing without HMR.
+# Usage: docker compose -f docker-compose.local.yml up --build
+# Requires: .env.local at monorepo root (copy from .env.local.example and fill in)
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: audience_intelligence
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg_data_local:/var/lib/postgresql/data
+      - ./o_daria_be/src/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./o_daria_be/src/db/schema_runtime.sql:/docker-entrypoint-initdb.d/02_schema_runtime.sql
+      - ./o_daria_be/src/db/schema_auth.sql:/docker-entrypoint-initdb.d/03_schema_auth.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d audience_intelligence"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ~/.ollama:/root/.ollama
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "ollama serve & sleep 3 && ollama pull nomic-embed-text && wait",
+      ]
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list | grep -q nomic-embed-text"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  api:
+    build:
+      context: ./o_daria_be
+    env_file: ./o_daria_be/.env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/audience_intelligence
+      PORT: 3300
+      EMBEDDING_PROVIDER: ollama
+      EMBEDDING_BASE_URL: http://ollama:11434/v1
+      USE_LOCAL_PROFILES: "true"
+      PROFILES_DIR: /app/profiles
+      # Allow nginx to call the API (CORS)
+      FRONTEND_URL: http://localhost:8080
+    volumes:
+      - ./o_daria_be/profiles:/app/profiles
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    restart: on-failure
+
+  nginx:
+    build:
+      context: ./o_daria_ui
+      dockerfile: Dockerfile.local
+      args:
+        # Baked in at build time — set GOOGLE_CLIENT_ID in .env.local
+        GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+        VITE_API_BASE_URL: /api
+        VITE_MFE_AUTH_URL: /mfe-auth/remoteEntry.js
+        VITE_MFE_PROJECTS_URL: /mfe-projects/remoteEntry.js
+        VITE_MFE_REPORTS_URL: /mfe-reports/remoteEntry.js
+        VITE_MFE_CANVA_URL: /mfe-canva/remoteEntry.js
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  pg_data_local:

@@ -1,0 +1,13 @@
+aws_region  = "us-east-1"
+app_name    = "o-daria"
+environment = "prod"
+
+# Secrets — do NOT commit real values. Set as TF_VAR_* env vars in CI instead:
+#   export TF_VAR_anthropic_api_key="sk-ant-..."
+#   export TF_VAR_google_client_id="<client-id>.apps.googleusercontent.com"
+#   export TF_VAR_api_key="your-api-key"
+#
+# Or create a terraform.tfvars.secret (git-ignored) for local applies:
+#   anthropic_api_key = "sk-ant-..."
+#   google_client_id  = "..."
+#   api_key           = "..."
