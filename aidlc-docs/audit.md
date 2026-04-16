@@ -236,6 +236,15 @@
 
 ---
 
+## Operations Phase — SSM InvalidInstanceId Error
+
+**Timestamp**: 2026-04-17T00:03:00Z
+**User Input**: "On the deployment action, there's an error... InvalidInstanceId when calling the SendCommand operation: Instances not in a valid state for account"
+**AI Response**: Root cause: EC2 IAM role lacked AmazonSSMManagedInstanceCore at launch time so SSM agent never registered. Also found aarch64/x86_64 mismatch in user_data Docker Compose download. Fixed: user_data.sh.tpl now explicitly enables/starts amazon-ssm-agent and downloads x86_64 Docker Compose binary. Instance must be replaced (terraform taint + apply) for user_data fixes to take effect. Immediate workaround: reboot existing instance from AWS Console/CLI to re-register SSM agent.
+**Context**: OPERATIONS PHASE — SSM error diagnosis and fix
+
+---
+
 ## Operations Phase — BE Deployment Complete
 
 **Timestamp**: 2026-04-17T00:02:00Z
