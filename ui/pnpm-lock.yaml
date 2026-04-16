@@ -36,6 +36,9 @@ importers:
       '@app/ui':
         specifier: workspace:*
         version: link:../../packages/@app/ui
+      '@react-oauth/google':
+        specifier: ^0.12.1
+        version: 0.12.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       formik:
         specifier: 2.4.6
         version: 2.4.6(@types/react@18.3.18)(react@18.3.1)
@@ -391,6 +394,9 @@ importers:
       '@app/ui':
         specifier: workspace:*
         version: link:../../packages/@app/ui
+      '@react-oauth/google':
+        specifier: ^0.12.1
+        version: 0.12.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       '@tanstack/react-query':
         specifier: 5.62.16
         version: 5.62.16(react@18.3.1)
@@ -498,6 +504,9 @@ importers:
 
   packages/@app/auth:
     dependencies:
+      '@app/api-client':
+        specifier: workspace:*
+        version: link:../api-client
       axios:
         specifier: 1.7.9
         version: 1.7.9
@@ -1396,6 +1405,12 @@ packages:
     peerDependenciesMeta:
       '@types/react':
         optional: true
+
+  '@react-oauth/google@0.12.2':
+    resolution: {integrity: sha512-d1GVm2uD4E44EJft2RbKtp8Z1fp/gK8Lb6KHgs3pHlM0PxCXGLaq8LLYQYENnN4xPWO1gkL4apBtlPKzpLvZwg==}
+    peerDependencies:
+      react: '>=16.8.0'
+      react-dom: '>=16.8.0'
 
   '@remix-run/router@1.21.0':
     resolution: {integrity: sha512-xfSkCAchbdG5PnbrKqFWwia4Bi61nH+wm8wLEqfHDyp7Y3dZzgqS2itV8i4gAq9pC2HsTpwyBC6Ds8VHZ96JlA==}
@@ -5151,6 +5166,11 @@ snapshots:
       react: 18.3.1
     optionalDependencies:
       '@types/react': 18.3.18
+
+  '@react-oauth/google@0.12.2(react-dom@18.3.1(react@18.3.1))(react@18.3.1)':
+    dependencies:
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
 
   '@remix-run/router@1.21.0': {}
 

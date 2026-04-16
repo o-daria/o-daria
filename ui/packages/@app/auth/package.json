@@ -12,7 +12,7 @@
     "clean": "rm -rf dist coverage"
   },
   "dependencies": {
-    "@app/api-client": "*",
+    "@app/api-client": "workspace:*",
     "axios": "1.7.9"
   },
   "devDependencies": {
