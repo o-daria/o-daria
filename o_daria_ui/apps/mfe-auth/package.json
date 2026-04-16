@@ -1,0 +1,51 @@
+{
+  "name": "mfe-auth",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "node -e \"const p=require('path');require('fs').copyFileSync(p.join(p.dirname(require.resolve('msw/package.json')),'lib','mockServiceWorker.js'),'public/mockServiceWorker.js')\" && webpack serve --mode development",
+    "build": "webpack --mode production",
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src --ext .ts,.tsx",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "clean": "rm -rf dist coverage"
+  },
+  "dependencies": {
+    "@app/auth": "workspace:*",
+    "@app/ui": "workspace:*",
+    "@react-oauth/google": "^0.12.1",
+    "formik": "2.4.6",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.28.1",
+    "yup": "1.6.1"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
+    "@testing-library/user-event": "14.5.2",
+    "@types/react": "18.3.18",
+    "@types/react-dom": "18.3.5",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "css-loader": "7.1.2",
+    "postcss": "8.5.1",
+    "postcss-loader": "8.1.1",
+    "tailwindcss": "3.4.17",
+    "html-webpack-plugin": "5.6.3",
+    "jsdom": "25.0.1",
+    "msw": "2.7.0",
+    "style-loader": "4.0.0",
+    "ts-loader": "9.5.1",
+    "typescript": "5.7.3",
+    "vitest": "2.1.8",
+    "webpack": "5.97.1",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "5.2.0",
+    "@types/node": "22.10.7"
+  },
+  "msw": {
+    "workerDirectory": ["public"]
+  }
+}

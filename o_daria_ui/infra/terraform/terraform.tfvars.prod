@@ -1,0 +1,6 @@
+aws_region          = "us-east-1"
+app_name            = "o-daria-ui"
+environment         = "prod"
+# Set external_api_domain to the actual backend API domain, e.g.:
+# external_api_domain = "https://api.example.com"
+external_api_domain = "REPLACE_WITH_BACKEND_API_DOMAIN"

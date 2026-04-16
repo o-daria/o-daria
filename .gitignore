@@ -4,6 +4,7 @@ node_modules/
 
 # Local .terraform directory (provider plugins and modules)
 .terraform/
+**/.terraform/
 
 # .tfstate files (contain sensitive data and infra status)
 *.tfstate

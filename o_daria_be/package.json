@@ -1,0 +1,38 @@
+{
+  "name": "audience-intelligence",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "Instagram audience analysis pipeline with RAG, caching, and AI safety layers",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "node --watch src/app.js",
+    "migrate": "bash scripts/migrate.sh",
+    "docker:migrate": "bash scripts/migrate.sh docker",
+    "seed-prompts": "node -e 'import(\"./src/prompts/registry.js\").then(m => m.seedPrompts())'",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "local": "node scripts/run-local.js",
+    "prepare-canva": "node scripts/prepare-canva.js",
+    "docker:dev": "docker compose -f docker-compose.yml -f docker-compose.dev.yml up --build"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@aws-sdk/client-s3": "^3.758.0",
+    "cors": "^2.8.6",
+    "express": "^4.18.2",
+    "google-auth-library": "^9.15.0",
+    "multer": "^2.1.1",
+    "openai": "^4.28.0",
+    "pg": "^8.11.3",
+    "uuid": "^9.0.0"
+  },
+  "devDependencies": {
+    "@types/multer": "^2.1.0",
+    "dotenv": "^16.6.1",
+    "vitest": "^4.1.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

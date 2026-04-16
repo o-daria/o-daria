@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@app/auth": ["../../packages/@app/auth/src/index.ts"],
+      "@app/ui": ["../../packages/@app/ui/src/index.ts"],
+      "@app/ui/src/lib/utils": ["../../packages/@app/ui/src/lib/utils.ts"]
+    }
+  },
+  "include": ["src"]
+}

@@ -1,0 +1,70 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: audience_intelligence
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      # SQL files applied in order on first boot (empty volume only)
+      - ./src/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./src/db/schema_runtime.sql:/docker-entrypoint-initdb.d/02_schema_runtime.sql
+      - ./src/db/schema_auth.sql:/docker-entrypoint-initdb.d/03_schema_auth.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d audience_intelligence"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      # Bind-mount host ~/.ollama so the container reuses already-pulled models.
+      # Run `ollama pull nomic-embed-text` on the host once; no network needed at container start.
+      - ~/.ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "ollama serve & sleep 3 && ollama pull nomic-embed-text && wait",
+      ]
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list | grep -q nomic-embed-text"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+  api:
+    build: .
+    env_file: .env
+    environment:
+      # Overrides DATABASE_URL from .env — points to the db container
+      DATABASE_URL: postgres://postgres:postgres@db:5432/audience_intelligence
+      PORT: 3300
+      # Embeddings via Ollama (free, local) — no OpenAI key needed
+      EMBEDDING_PROVIDER: ollama
+      EMBEDDING_BASE_URL: http://ollama:11434/v1
+      # Hybrid mode: skip Apify, read images from the mounted profiles/ volume
+      USE_LOCAL_PROFILES: "true"
+      PROFILES_DIR: /app/profiles
+    volumes:
+      # Mount host profiles/ — writable so upload mode can persist images
+      - ./profiles:/app/profiles
+    ports:
+      - "3300:3300"
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+    restart: on-failure
+
+volumes:
+  pg_data:
+  ollama_data:

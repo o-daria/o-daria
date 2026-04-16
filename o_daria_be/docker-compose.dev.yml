@@ -1,0 +1,38 @@
+# Development overlay — use with:
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+#
+# What this does:
+#   • Mounts ./src into the container so edits take effect without rebuilding
+#   • Switches the API command to `node --watch` for auto-restart on file save
+#   • Adds Adminer (DB UI) on :8080 and Open WebUI (Ollama UI) on :3001
+#   • Keeps db/ollama services identical to production compose
+
+services:
+  api:
+    command: ["node", "--watch", "src/app.js"]
+    volumes:
+      - ./src:/app/src # live-reload: host src/ shadows the baked copy
+      - ./profiles:/app/profiles
+
+  adminer:
+    image: adminer
+    ports:
+      - "8080:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+    depends_on:
+      - db
+
+  # open-webui:
+  #   image: ghcr.io/open-webui/open-webui:main
+  #   ports:
+  #     - "3001:8080"
+  #   environment:
+  #     OLLAMA_BASE_URL: http://ollama:11434
+  #   volumes:
+  #     - open_webui_data:/app/backend/data
+  #   depends_on:
+  #     - ollama
+
+# volumes:
+# open_webui_data:

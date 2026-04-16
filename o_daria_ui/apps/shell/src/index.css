@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Chinoiserie base styles */
+body {
+  font-family: theme("fontFamily.body");
+  background-color: theme("colors.surface");
+  color: theme("colors.ink.DEFAULT");
+}
+
+h1, h2, h3, h4 {
+  font-family: theme("fontFamily.display");
+}
