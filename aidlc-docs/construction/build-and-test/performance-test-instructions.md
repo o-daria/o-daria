@@ -35,7 +35,7 @@ curl -s -o /dev/null -w "Total: %{time_total}s\n" \
 Large bundles cause slow initial load. Check after `pnpm build`:
 
 ```bash
-cd o_daria_ui
+cd ui
 
 GOOGLE_CLIENT_ID=test pnpm build 2>&1 | grep -E "dist/.*\.js" | awk '{print $NF, $(NF-1)}' | sort -k2 -rn | head -20
 ```
@@ -49,6 +49,7 @@ GOOGLE_CLIENT_ID=test pnpm build 2>&1 | grep -E "dist/.*\.js" | awk '{print $NF,
 | Any single chunk | < 500 KB |
 
 If any chunk exceeds the threshold, investigate with:
+
 ```bash
 # Generate bundle analysis (requires webpack-bundle-analyzer or similar)
 # Check if @react-oauth/google is being duplicated across MFEs
@@ -68,6 +69,7 @@ time docker compose -f docker-compose.local.yml up --wait
 ```
 
 Check individual service startup:
+
 ```bash
 docker compose -f docker-compose.local.yml ps
 # All services should show "healthy" or "running" within the expected window

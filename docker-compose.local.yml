@@ -11,9 +11,9 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - pg_data_local:/var/lib/postgresql/data
-      - ./o_daria_be/src/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
-      - ./o_daria_be/src/db/schema_runtime.sql:/docker-entrypoint-initdb.d/02_schema_runtime.sql
-      - ./o_daria_be/src/db/schema_auth.sql:/docker-entrypoint-initdb.d/03_schema_auth.sql
+      - ./api/src/db/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+      - ./api/src/db/schema_runtime.sql:/docker-entrypoint-initdb.d/02_schema_runtime.sql
+      - ./api/src/db/schema_auth.sql:/docker-entrypoint-initdb.d/03_schema_auth.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d audience_intelligence"]
       interval: 5s
@@ -39,8 +39,8 @@ services:
 
   api:
     build:
-      context: ./o_daria_be
-    env_file: ./o_daria_be/.env
+      context: ./api
+    env_file: ./api/.env
     environment:
       DATABASE_URL: postgres://postgres:postgres@db:5432/audience_intelligence
       PORT: 3300
@@ -51,7 +51,7 @@ services:
       # Allow nginx to call the API (CORS)
       FRONTEND_URL: http://localhost:8080
     volumes:
-      - ./o_daria_be/profiles:/app/profiles
+      - ./api/profiles:/app/profiles
     depends_on:
       db:
         condition: service_healthy
@@ -61,7 +61,7 @@ services:
 
   nginx:
     build:
-      context: ./o_daria_ui
+      context: ./ui
       dockerfile: Dockerfile.local
       args:
         # Baked in at build time — set GOOGLE_CLIENT_ID in .env.local

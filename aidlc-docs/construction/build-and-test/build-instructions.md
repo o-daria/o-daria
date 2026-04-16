@@ -2,14 +2,14 @@
 
 ## Prerequisites
 
-| Tool | Version | Notes |
-|------|---------|-------|
-| Node.js | 20.x | Required by both BE and FE |
-| pnpm | 10.33.0 | FE workspace manager |
-| Docker | 24+ | Local stack + BE container build |
-| Docker Compose plugin | v2 | `docker compose` (not `docker-compose`) |
-| Terraform | >= 1.9.0 | Unit 4 only |
-| AWS CLI | v2 | Unit 4 only |
+| Tool                  | Version  | Notes                                   |
+| --------------------- | -------- | --------------------------------------- |
+| Node.js               | 20.x     | Required by both BE and FE              |
+| pnpm                  | 10.33.0  | FE workspace manager                    |
+| Docker                | 24+      | Local stack + BE container build        |
+| Docker Compose plugin | v2       | `docker compose` (not `docker-compose`) |
+| Terraform             | >= 1.9.0 | Unit 4 only                             |
+| AWS CLI               | v2       | Unit 4 only                             |
 
 ---
 
@@ -18,7 +18,7 @@
 ### Local (without Docker)
 
 ```bash
-cd o_daria_be
+cd api
 
 # Install dependencies (includes google-auth-library added in Unit 1)
 npm ci
@@ -34,7 +34,7 @@ node src/app.js
 ### With Docker (recommended)
 
 ```bash
-cd o_daria_be
+cd api
 
 # Build the BE Docker image
 docker build -t o-daria-be:local .
@@ -48,6 +48,7 @@ curl http://localhost:3300/health
 ```
 
 **What to verify:**
+
 - `POST /auth/google` route is registered (check startup logs, no route errors)
 - `GET /health` returns 200
 - DB schema includes `users` and `sessions` tables:
@@ -63,7 +64,7 @@ curl http://localhost:3300/health
 ### Type-check + build
 
 ```bash
-cd o_daria_ui
+cd ui
 
 # Install all workspace dependencies
 pnpm install --frozen-lockfile
@@ -78,6 +79,7 @@ GOOGLE_CLIENT_ID=placeholder pnpm build
 ```
 
 **What to verify:**
+
 - No TypeScript errors in `@app/auth` package (new types + deprecated annotations)
 - `apps/shell/dist/` contains `index.html` and JS chunks
 - `apps/mfe-auth/dist/` contains `remoteEntry.js`
@@ -102,6 +104,7 @@ docker compose -f docker-compose.local.yml up --build
 ```
 
 **What to verify:**
+
 - `http://localhost:8080` → shell SPA loads
 - `http://localhost:8080/auth/login` → Google Sign-In button visible (no email/password form)
 - `http://localhost:8080/api/health` → `{"status":"ok"}` (nginx proxy working)
@@ -145,7 +148,7 @@ The EC2 `user_data` script pulls `ghcr.io/o-daria/o-daria-be:latest`.
 You must push the BE image to GHCR before running `terraform apply`:
 
 ```bash
-cd o_daria_be
+cd api
 
 # Authenticate to GHCR (requires GitHub PAT with packages:write scope)
 echo $GITHUB_TOKEN | docker login ghcr.io -u <github-username> --password-stdin
@@ -182,16 +185,18 @@ The S3 bucket policy requires the CloudFront ARN, but CloudFront is created afte
 ### Step D: Post-apply configuration
 
 After `terraform apply` completes, retrieve outputs:
+
 ```bash
 terraform output
 ```
 
 Use outputs to:
+
 1. **Create IAM access keys** for the deploy user:
    ```bash
    aws iam create-access-key --user-name $(terraform output -raw deploy_user_name)
    ```
-2. **Add GitHub Actions secrets** in `o_daria_ui` repo settings:
+2. **Add GitHub Actions secrets** in `ui` repo settings:
    - `AWS_ACCESS_KEY_ID` / `AWS_SECRET_ACCESS_KEY` — from above
    - `AWS_REGION` = `us-east-1`
    - `S3_BUCKET` = `terraform output -raw s3_fe_bucket_name`
@@ -203,4 +208,4 @@ Use outputs to:
    - `VITE_MFE_REPORTS_URL` = `https://$(terraform output -raw cloudfront_domain_name)/mfe-reports/remoteEntry.js`
    - `VITE_MFE_CANVA_URL` = `https://$(terraform output -raw cloudfront_domain_name)/mfe-canva/remoteEntry.js`
 3. **Update Google Cloud Console** — add EC2 DNS + CloudFront domain as authorized JavaScript origins
-4. **Trigger FE deploy** — push to `main` branch of `o_daria_ui`
+4. **Trigger FE deploy** — push to `main` branch of `ui`

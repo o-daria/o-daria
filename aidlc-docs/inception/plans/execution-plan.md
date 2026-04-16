@@ -3,11 +3,13 @@
 ## Detailed Analysis Summary
 
 ### Transformation Scope (Brownfield)
+
 - **Transformation Type**: Multi-concern architectural enhancement — auth, infrastructure, storage, and local dev all touched
 - **Primary Changes**: Replace email/password auth with Google Sign-In; simplify 5 CloudFront distributions to 1; add S3 file storage; create single-command local stack
 - **Related Components**: BE (app.js, DB schema, migrate.sh), FE (@app/auth package, mfe-auth app, shell app, webpack configs), IaC (Terraform), CI/CD (deploy.yml), Docker (docker-compose files)
 
 ### Change Impact Assessment
+
 - **User-facing changes**: YES — login UI completely replaced (email form → Google button); authentication flow changes
 - **Structural changes**: YES — auth architecture (API_KEY → session tokens); FE deployment model (5 CF distributions → 1)
 - **Data model changes**: YES — new `users` and `sessions` tables required; `schema_auth.sql` must be applied via migrate.sh
@@ -17,30 +19,31 @@
 ### Component Relationships (Brownfield)
 
 ```
-Primary: o_daria_be/src/app.js (auth middleware + new endpoint)
-  └── Depends on: o_daria_be/src/db/schema_auth.sql (new tables)
+Primary: api/src/app.js (auth middleware + new endpoint)
+  └── Depends on: api/src/db/schema_auth.sql (new tables)
   └── Depends on: google-auth-library (new npm dep)
   └── Feeds into: All protected routes (tenantId resolution)
 
-Primary: o_daria_ui/packages/@app/auth (auth package)
+Primary: ui/packages/@app/auth (auth package)
   └── Consumed by: mfe-auth (LoginPage), shell (App.tsx, AuthProvider)
   └── Depends on: @react-oauth/google (new dep, lives in mfe-auth + shell)
   └── Shared singleton via Module Federation
 
-Infrastructure: o_daria_ui/infra/terraform/ (Terraform IaC)
+Infrastructure: ui/infra/terraform/ (Terraform IaC)
   └── Changes: 5 CF + 5 S3 → 1 CF + 2 S3 (FE + images)
   └── Feeds into: deploy.yml S3 sync targets
 
-CI/CD: o_daria_ui/.github/workflows/deploy.yml
+CI/CD: ui/.github/workflows/deploy.yml
   └── Depends on: Terraform outputs (bucket name, CF distribution ID)
 
 Local dev: docker-compose.local.yml (new, monorepo root)
-  └── Depends on: o_daria_ui/Dockerfile.local (new)
-  └── Depends on: o_daria_ui/infra/nginx/nginx.local.conf (new)
+  └── Depends on: ui/Dockerfile.local (new)
+  └── Depends on: ui/infra/nginx/nginx.local.conf (new)
   └── Depends on: BE auth working + DB schema applied
 ```
 
 ### Risk Assessment
+
 - **Risk Level**: HIGH
 - **Rollback Complexity**: Difficult — auth changes affect both BE and FE simultaneously; DB schema is additive but existing API_KEY auth removed
 - **Testing Complexity**: Complex — requires Google OAuth credentials, live Google token validation, Docker networking, Module Federation chunk loading
@@ -144,6 +147,7 @@ OPERATIONS PHASE:
 ## Phases to Execute
 
 ### INCEPTION PHASE
+
 - [x] Workspace Detection — COMPLETED
 - [-] Reverse Engineering — SKIPPED (exploration artifacts already captured in prior session)
 - [x] Requirements Analysis — COMPLETED
@@ -156,6 +160,7 @@ OPERATIONS PHASE:
   - **Rationale**: 4 distinct units of work span different systems (BE auth, FE auth, local dev stack, AWS infra). Each has different dependencies, tech stacks, and risk profiles. Decomposition enables focused per-unit construction loops.
 
 ### CONSTRUCTION PHASE
+
 - [ ] Functional Design — EXECUTE (per unit, where applicable)
   - **Rationale**: New DB tables (users, sessions), new service contracts (AuthService), new S3 interface — all require data model and interface definitions before coding.
 - [ ] NFR Requirements — EXECUTE (per unit, where applicable)
@@ -168,6 +173,7 @@ OPERATIONS PHASE:
 - [ ] Build and Test — EXECUTE (ALWAYS, after all units)
 
 ### OPERATIONS PHASE
+
 - [ ] Operations — PLACEHOLDER
 
 ---
@@ -176,7 +182,8 @@ OPERATIONS PHASE:
 
 The 4 units below will be constructed in sequence (each dependency-ordered):
 
-### Unit 1: Backend Auth (o_daria_be)
+### Unit 1: Backend Auth (api)
+
 - `schema_auth.sql` — users + sessions tables
 - `migrate.sh` — apply schema_auth.sql as 3rd file
 - `app.js` — POST /auth/google + updated authenticate() middleware
@@ -185,6 +192,7 @@ The 4 units below will be constructed in sequence (each dependency-ordered):
 - `.env.example` — add GOOGLE_CLIENT_ID, FRONTEND_URL
 
 ### Unit 2: Frontend Auth (@app/auth + mfe-auth + shell)
+
 - `packages/@app/auth/src/types.ts` — GoogleAuthResponse, updated User
 - `packages/@app/auth/src/tokenStorage.ts` — token storage
 - `packages/@app/auth/src/AuthService.ts` — loginWithGoogle + logout
@@ -198,14 +206,16 @@ The 4 units below will be constructed in sequence (each dependency-ordered):
 - `apps/shell/webpack.config.js` — GOOGLE_CLIENT_ID DefinePlugin
 
 ### Unit 3: Local Dev Stack
+
 - `docker-compose.local.yml` (monorepo root)
-- `o_daria_ui/Dockerfile.local` — multi-stage pnpm build → nginx
-- `o_daria_ui/infra/nginx/nginx.local.conf`
+- `ui/Dockerfile.local` — multi-stage pnpm build → nginx
+- `ui/infra/nginx/nginx.local.conf`
 
 ### Unit 4: AWS Infrastructure
-- `o_daria_ui/infra/terraform/` — rewrite for 1 CF + 2 S3
-- `o_daria_ui/.github/workflows/deploy.yml` — prefix-path S3 sync
-- `o_daria_ui/.env.example` — GOOGLE_CLIENT_ID
+
+- `ui/infra/terraform/` — rewrite for 1 CF + 2 S3
+- `ui/.github/workflows/deploy.yml` — prefix-path S3 sync
+- `ui/.env.example` — GOOGLE_CLIENT_ID
 
 ---
 
@@ -224,7 +234,7 @@ The 4 units below will be constructed in sequence (each dependency-ordered):
 
 - **Update Approach**: Sequential (dependency-ordered)
 - **Critical Path**: Unit 1 (BE auth schema + endpoint) → Unit 2 (FE auth) → Unit 3 (local stack validates both) → Unit 4 (AWS infra)
-- **Coordination Points**: 
+- **Coordination Points**:
   - `POST /auth/google` API contract (BE Unit 1 ↔ FE Unit 2)
   - `GOOGLE_CLIENT_ID` env var (shared across BE + FE units)
   - `tenant_id` type compatibility (UUID in users table ↔ TEXT in existing tables — bridged via `.toString()` in middleware)

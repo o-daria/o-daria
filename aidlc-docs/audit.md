@@ -59,7 +59,7 @@
 ## Application Design — Infrastructure Scope Decision
 
 **Timestamp**: 2026-04-15T00:06:00Z
-**User Input**: "Why would we move o_daria_ui/infra/terraform/ into the root folder. It may include the WHOLE infra setup for all units. What do you think?" then "Option A + EC2 t4g.nano + Docker"
+**User Input**: "Why would we move ui/infra/terraform/ into the root folder. It may include the WHOLE infra setup for all units. What do you think?" then "Option A + EC2 t4g.nano + Docker"
 **AI Response**: Agreed on unified root Terraform at o_daria/infra/terraform/ covering full stack (FE CloudFront/S3 + BE EC2 t4g.nano + S3 images). Existing FE modules migrated. New ec2-be and s3-images modules added.
 **Context**: INCEPTION PHASE - Infrastructure architecture decision (Option A + EC2 t4g.nano)
 
@@ -132,7 +132,7 @@
 
 **Timestamp**: 2026-04-16T00:07:00Z
 **User Input**: N/A (execution in progress)
-**AI Response**: All 15 steps executed successfully. Created: googleAuthService.ts. Modified: types.ts, tokenStorage.ts, AuthService.ts, AuthContext.tsx, AuthProvider.tsx, index.ts, @app/auth/package.json, mfe-auth/package.json, mfe-auth/webpack.config.js, shell/webpack.config.js, shell/package.json, LoginPage.tsx, Module.tsx, shell/App.tsx, o_daria_ui/.env.example. Created code summary at aidlc-docs/construction/unit-2-fe-auth/code/summary.md.
+**AI Response**: All 15 steps executed successfully. Created: googleAuthService.ts. Modified: types.ts, tokenStorage.ts, AuthService.ts, AuthContext.tsx, AuthProvider.tsx, index.ts, @app/auth/package.json, mfe-auth/package.json, mfe-auth/webpack.config.js, shell/webpack.config.js, shell/package.json, LoginPage.tsx, Module.tsx, shell/App.tsx, ui/.env.example. Created code summary at aidlc-docs/construction/unit-2-fe-auth/code/summary.md.
 **Context**: CONSTRUCTION PHASE - Unit 2: Code Generation — COMPLETE
 
 ---
@@ -159,7 +159,7 @@
 
 **Timestamp**: 2026-04-16T00:09:00Z
 **User Input**: N/A (execution in progress)
-**AI Response**: All 7 steps executed successfully. Created: docker-compose.local.yml (monorepo root), o_daria_ui/Dockerfile.local (multi-stage build), o_daria_ui/infra/nginx/nginx.local.conf (path routing + API proxy), .env.local.example (monorepo root), aidlc-docs/construction/plans/unit-3-local-stack-code-generation-plan.md, aidlc-docs/construction/unit-3-local-stack/code/summary.md. Updated: aidlc-state.md (Unit 3 COMPLETE, Unit 4 PENDING).
+**AI Response**: All 7 steps executed successfully. Created: docker-compose.local.yml (monorepo root), ui/Dockerfile.local (multi-stage build), ui/infra/nginx/nginx.local.conf (path routing + API proxy), .env.local.example (monorepo root), aidlc-docs/construction/plans/unit-3-local-stack-code-generation-plan.md, aidlc-docs/construction/unit-3-local-stack/code/summary.md. Updated: aidlc-state.md (Unit 3 COMPLETE, Unit 4 PENDING).
 **Context**: CONSTRUCTION PHASE - Unit 3: Code Generation — COMPLETE
 
 ---
@@ -186,7 +186,7 @@
 
 **Timestamp**: 2026-04-16T00:12:00Z
 **User Input**: N/A (execution in progress)
-**AI Response**: All 8 steps executed successfully. Created: infra/terraform/main.tf, variables.tf, outputs.tf, terraform.tfvars.prod, user_data.sh.tpl, modules/s3-hosting/main.tf, modules/cloudfront/main.tf, modules/iam-deploy/main.tf, modules/s3-images/main.tf, modules/ec2-be/main.tf. Modified: o_daria_ui/.github/workflows/deploy.yml (added GOOGLE_CLIENT_ID). Created: aidlc-docs/construction/plans/unit-4-aws-infra-code-generation-plan.md, aidlc-docs/construction/unit-4-aws-infra/code/summary.md.
+**AI Response**: All 8 steps executed successfully. Created: infra/terraform/main.tf, variables.tf, outputs.tf, terraform.tfvars.prod, user_data.sh.tpl, modules/s3-hosting/main.tf, modules/cloudfront/main.tf, modules/iam-deploy/main.tf, modules/s3-images/main.tf, modules/ec2-be/main.tf. Modified: ui/.github/workflows/deploy.yml (added GOOGLE_CLIENT_ID). Created: aidlc-docs/construction/plans/unit-4-aws-infra-code-generation-plan.md, aidlc-docs/construction/unit-4-aws-infra/code/summary.md.
 **Context**: CONSTRUCTION PHASE - Unit 4: Code Generation — COMPLETE. All 4 units complete.
 
 ---

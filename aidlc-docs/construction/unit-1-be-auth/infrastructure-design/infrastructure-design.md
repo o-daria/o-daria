@@ -2,11 +2,11 @@
 
 ## Runtime Environment
 
-| Environment | Stack | Notes |
-|-------------|-------|-------|
-| Local dev | Docker Compose (`o_daria_be/docker-compose.yml`) | PostgreSQL + Ollama + API containers |
-| Local full-stack | `docker-compose.local.yml` (Unit 3) | Same BE image; nginx fronts it |
-| Production | EC2 t4g.nano + Docker (Unit 4 Terraform) | Same `docker-compose.yml`; no ECS/ECR |
+| Environment      | Stack                                     | Notes                                 |
+| ---------------- | ----------------------------------------- | ------------------------------------- |
+| Local dev        | Docker Compose (`api/docker-compose.yml`) | PostgreSQL + Ollama + API containers  |
+| Local full-stack | `docker-compose.local.yml` (Unit 3)       | Same BE image; nginx fronts it        |
+| Production       | EC2 t4g.nano + Docker (Unit 4 Terraform)  | Same `docker-compose.yml`; no ECS/ECR |
 
 ## BE Service (api container)
 
@@ -34,11 +34,11 @@
 
 ## New Environment Variables
 
-| Variable | Required In | Purpose |
-|----------|------------|---------|
-| `GOOGLE_CLIENT_ID` | BE `.env` / EC2 env | Google OAuth2 client ID for token verification |
-| `FRONTEND_URL` | BE `.env` / EC2 env | Added to CORS `allowedOrigins` (e.g. CloudFront domain) |
-| `S3_IMAGES_BUCKET` | BE `.env` / EC2 env | S3 bucket name for profile images |
-| `AWS_REGION` | BE `.env` (local only) | AWS region for S3 client |
-| `AWS_ACCESS_KEY_ID` | BE `.env` (local only) | AWS credentials (local dev only; EC2 uses instance role) |
-| `AWS_SECRET_ACCESS_KEY` | BE `.env` (local only) | AWS credentials (local dev only) |
+| Variable                | Required In            | Purpose                                                  |
+| ----------------------- | ---------------------- | -------------------------------------------------------- |
+| `GOOGLE_CLIENT_ID`      | BE `.env` / EC2 env    | Google OAuth2 client ID for token verification           |
+| `FRONTEND_URL`          | BE `.env` / EC2 env    | Added to CORS `allowedOrigins` (e.g. CloudFront domain)  |
+| `S3_IMAGES_BUCKET`      | BE `.env` / EC2 env    | S3 bucket name for profile images                        |
+| `AWS_REGION`            | BE `.env` (local only) | AWS region for S3 client                                 |
+| `AWS_ACCESS_KEY_ID`     | BE `.env` (local only) | AWS credentials (local dev only; EC2 uses instance role) |
+| `AWS_SECRET_ACCESS_KEY` | BE `.env` (local only) | AWS credentials (local dev only)                         |

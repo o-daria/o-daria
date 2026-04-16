@@ -71,7 +71,7 @@ A) I don't know the exact location — detect it from the codebase and inject wh
 B) It's in `packages/@app/api-client/` or similar shared package — I'll confirm after you identify the file
 X) Other (describe: exact path if known)
 
-[Answer]: in `./o_daria_ui/packages/@app/api-client/src/apiClient.ts`
+[Answer]: in `./ui/packages/@app/api-client/src/apiClient.ts`
 
 ## Q7: Email/Password Pages — Removal Scope
 

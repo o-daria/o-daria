@@ -2,7 +2,7 @@
 
 ## Intent Analysis Summary
 
-- **User Request**: Take MVP monorepo (o_daria_be + o_daria_ui) to production-like state for first customer review
+- **User Request**: Take MVP monorepo (api + ui) to production-like state for first customer review
 - **Request Type**: Enhancement / Migration — adding Google Auth, simplifying deployment infrastructure, adding cloud file storage, enabling single-command local testing
 - **Scope Estimate**: Cross-system — changes span BE (auth, storage), FE (auth UI, build), IaC (Terraform/AWS), and DevOps (Docker, CI/CD)
 - **Complexity Estimate**: Complex — multiple concerns (auth, infra, storage, local dev), interdependent changes, security-critical auth flow

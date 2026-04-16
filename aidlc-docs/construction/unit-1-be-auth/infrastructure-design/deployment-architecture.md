@@ -3,7 +3,7 @@
 ## Local Development (existing `docker-compose.yml`)
 
 ```
-docker compose up  (o_daria_be/)
+docker compose up  (api/)
   ├── db:5432      pgvector/pgvector:pg16
   │   └── init: 01_schema.sql, 02_schema_runtime.sql, 03_schema_auth.sql  ← new
   ├── ollama:11434 ollama/ollama:latest
@@ -12,8 +12,9 @@ docker compose up  (o_daria_be/)
 ```
 
 **Migration for existing DBs** (volume already exists):
+
 ```bash
-cd o_daria_be && ./scripts/migrate.sh docker
+cd api && ./scripts/migrate.sh docker
 # applies schema_auth.sql to running db container
 ```
 
@@ -33,6 +34,7 @@ EC2 t4g.nano (arm64, Amazon Linux 2023)
 ```
 
 **EC2 security group** (provisioned in Unit 4):
+
 - Inbound port 22 (SSH — for deployment)
 - Inbound port 3300 (API — restricted to CIDR or load balancer if added later)
 - Outbound: all (HTTPS to Google OAuth API, AWS S3, Anthropic API)
@@ -41,7 +43,7 @@ EC2 t4g.nano (arm64, Amazon Linux 2023)
 
 ```
 1. SSH to EC2
-2. cd /app/o_daria_be
+2. cd /app/api
 3. git pull origin main
 4. docker compose build api
 5. docker compose up -d api

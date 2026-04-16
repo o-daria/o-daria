@@ -1,11 +1,11 @@
 # Unit Test Instructions
 
-## Backend — `o_daria_be`
+## Backend — `api`
 
 **Framework**: Vitest (`vitest.config.js` at BE root)
 
 ```bash
-cd o_daria_be
+cd api
 
 # Run all unit + integration tests (mocked DB/LLM)
 npm test
@@ -22,6 +22,7 @@ npx vitest run src/app.test.js     # HTTP integration (mocked)
 ```
 
 **New tests added in Unit 1** (in `src/app.test.js`):
+
 - `POST /auth/google` — validates `credential` field, calls Google verifier, returns `{ token, user }`
 - `authenticate` middleware — session token lookup, tenant isolation
 - Missing/invalid `credential` → 400
@@ -29,6 +30,7 @@ npx vitest run src/app.test.js     # HTTP integration (mocked)
 - Valid flow → 200 + `{ token, user }` shape
 
 **Verify these specific test cases pass:**
+
 ```bash
 npx vitest run src/app.test.js --reporter=verbose
 # Look for: "POST /auth/google" describe block
@@ -36,6 +38,7 @@ npx vitest run src/app.test.js --reporter=verbose
 ```
 
 **Existing tests that must still pass (regression):**
+
 ```bash
 npx vitest run src/safety/
 # inputSanitizer — INJECTION_PATTERNS unchanged
@@ -52,6 +55,7 @@ npx vitest run src/pipeline/
 ```
 
 **Coverage baseline** (existing, must not regress):
+
 ```bash
 npx vitest run --coverage
 # Key: safety/ coverage should remain near 100%
@@ -59,12 +63,12 @@ npx vitest run --coverage
 
 ---
 
-## Frontend — `o_daria_ui`
+## Frontend — `ui`
 
 **Framework**: Vitest + React Testing Library (`vitest.config.ts` per package/app)
 
 ```bash
-cd o_daria_ui
+cd ui
 
 # Run all FE tests (turbo, all packages + apps)
 pnpm test
@@ -84,19 +88,23 @@ pnpm --filter @app/auth test -- --reporter=verbose
 ```
 
 **`tokenStorage.test.ts`** — new methods must be tested:
+
 - `getToken()` — returns null when not set, returns value when set
 - `setToken(token)` — persists to `localStorage` under key `app.token`
 - `clearAll()` — removes both `app.user` and `app.token`
 
 **`AuthProvider.test.tsx`** — updated behaviour:
+
 - `loginWithGoogle(credential)` → calls `AuthService.loginWithGoogle`, stores token + user, navigates to `/projects`
 - `logout()` → clears storage, deletes `Authorization` header, navigates to `/auth/login`
 - Mount with stored token + user → restores session (stays authenticated), `isLoading` becomes false
 
 **`AuthService.test.ts`** — new method:
+
 - `loginWithGoogle(credential)` → delegates to `googleAuthService`, returns `GoogleAuthResponse`
 
 **Verify no regressions in:**
+
 - `withAuthGuard.test.tsx` — redirect on unauthenticated, pass-through on authenticated + `isLoading` gate
 
 ### `@app/ui` package
@@ -115,12 +123,12 @@ pnpm --filter @app/api-client test
 
 ---
 
-## Smoke Test — `o_daria_be`
+## Smoke Test — `api`
 
 **Requires**: `DATABASE_URL_TEST` env var pointing to a test PostgreSQL instance (separate from dev DB).
 
 ```bash
-cd o_daria_be
+cd api
 
 # Set test DB URL (create a separate DB for smoke tests)
 export DATABASE_URL_TEST="postgres://postgres:postgres@localhost:5432/ai_test"
@@ -130,6 +138,7 @@ npx vitest run test/pipeline.smoke.test.js --reporter=verbose
 ```
 
 The smoke test exercises the complete pipeline (fetch → analyze → aggregate → validate) with:
+
 - Mocked LLM responses (no Anthropic API calls)
 - Real PostgreSQL test DB (pgvector extension required)
 - Verifies report signing, tenant isolation, segment library writes
