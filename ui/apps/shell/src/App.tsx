@@ -8,6 +8,8 @@ import { AppRouter } from "./router/AppRouter";
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
 
+const googleClientId = process.env.GOOGLE_CLIENT_ID ?? "";
+
 function InnerApp(): React.ReactElement {
   const navigate = useNavigate();
 
@@ -26,8 +28,16 @@ function InnerApp(): React.ReactElement {
 }
 
 export function App(): React.ReactElement {
+  if (!googleClientId) {
+    return (
+      <div style={{ padding: "2rem", fontFamily: "sans-serif" }}>
+        <strong>Configuration error:</strong> GOOGLE_CLIENT_ID is not set. The app cannot start.
+      </div>
+    );
+  }
+
   return (
-    <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID ?? ""}>
+    <GoogleOAuthProvider clientId={googleClientId}>
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
           <InnerApp />
