@@ -217,3 +217,30 @@
 **Context**: OPERATIONS PHASE — placeholder acknowledged. AI-DLC workflow COMPLETE.
 
 ---
+
+## Operations Phase — BE Deployment Request
+
+**Timestamp**: 2026-04-17T00:00:00Z
+**User Input**: "Using AI-DLC, proceed with operations step. Last stage was: deploy FE app to prod. BE has not been deployed – only github container image build. FOLLOW AI-DLC rules."
+**AI Response**: Entering Operations stage. FE deployed via GitHub Actions (S3 + CloudFront). BE container image built to GHCR. BE not yet deployed to EC2. Planning BE deployment workflow. User confirmation required before proceeding.
+**Context**: OPERATIONS PHASE — BE deployment planning
+
+---
+
+## Operations Phase — BE Deployment Q&A
+
+**Timestamp**: 2026-04-17T00:01:00Z
+**User Input**: "Q1 - A, Q2 - B, Q3 - A"
+**AI Response**: EC2 is already provisioned (Elastic IP exists). Using AWS SSM Session Manager for deployment (no SSH key/port 22 needed). Path filter api/** only. Generating deploy-be.yml workflow and SSM IAM policy additions.
+**Context**: OPERATIONS PHASE — generating BE deployment artifacts
+
+---
+
+## Operations Phase — BE Deployment Complete
+
+**Timestamp**: 2026-04-17T00:02:00Z
+**User Input**: N/A (execution in progress)
+**AI Response**: Generated: .github/workflows/deploy-be.yml (SSM-based, api/** path trigger). Modified: infra/terraform/modules/ec2-be/main.tf (added AmazonSSMManagedInstanceCore policy attachment + instance_arn output). infra/terraform/modules/iam-deploy/main.tf (added ec2_instance_arn variable + SSMDeployBE + EC2DescribeForSSM policy statements). infra/terraform/main.tf (pass ec2_instance_arn to iam_deploy module). infra/terraform/outputs.tf (added ec2_instance_id root output).
+**Context**: OPERATIONS PHASE — BE deployment artifacts complete. Requires terraform apply + EC2_INSTANCE_ID GitHub secret.
+
+---

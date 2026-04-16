@@ -77,9 +77,10 @@
 
 ### OPERATIONS PHASE
 - [x] Operations (Placeholder) — COMPLETE
+- [x] BE Deployment — COMPLETE
 
 ## Current Status
 - **Lifecycle Phase**: OPERATIONS PHASE — COMPLETE
-- **Current Stage**: Operations — COMPLETE
+- **Current Stage**: BE Deployment — COMPLETE
 - **Next Stage**: N/A — AI-DLC workflow COMPLETE
-- **Status**: ALL PHASES COMPLETE — project ready for first customer review
+- **Status**: ALL PHASES COMPLETE — FE deployed, BE deployment pipeline ready; requires terraform apply + GitHub secret EC2_INSTANCE_ID

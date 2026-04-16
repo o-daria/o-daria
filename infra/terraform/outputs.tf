@@ -36,3 +36,8 @@ output "s3_images_bucket_name" {
   description = "S3 images bucket name — set S3_IMAGES_BUCKET in BE env"
   value       = module.s3_images.bucket_id
 }
+
+output "ec2_instance_id" {
+  description = "BE EC2 instance ID — set as EC2_INSTANCE_ID GitHub secret for deploy-be workflow"
+  value       = module.ec2_be.instance_id
+}

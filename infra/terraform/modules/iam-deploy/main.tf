@@ -7,6 +7,11 @@ data "aws_caller_identity" "current" {}
 
 # ── Least-privilege deploy policy ─────────────────────────────────────────────
 
+variable "ec2_instance_arn" {
+  description = "ARN of the BE EC2 instance (for SSM SendCommand permission)"
+  type        = string
+}
+
 data "aws_iam_policy_document" "deploy" {
   statement {
     sid    = "S3SyncAccess"
@@ -27,6 +32,26 @@ data "aws_iam_policy_document" "deploy" {
     effect    = "Allow"
     actions   = ["cloudfront:CreateInvalidation"]
     resources = [var.cf_dist_arn]
+  }
+
+  statement {
+    sid    = "SSMDeployBE"
+    effect = "Allow"
+    actions = [
+      "ssm:SendCommand",
+      "ssm:GetCommandInvocation",
+    ]
+    resources = [
+      var.ec2_instance_arn,
+      "arn:aws:ssm:*::document/AWS-RunShellScript",
+    ]
+  }
+
+  statement {
+    sid       = "EC2DescribeForSSM"
+    effect    = "Allow"
+    actions   = ["ec2:DescribeInstances"]
+    resources = ["*"]
   }
 }
 

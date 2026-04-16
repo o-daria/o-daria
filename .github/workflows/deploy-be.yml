@@ -1,0 +1,47 @@
+name: Deploy BE
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "api/**"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Pull latest image and restart via SSM
+        id: ssm
+        run: |
+          COMMAND_ID=$(aws ssm send-command \
+            --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
+            --document-name "AWS-RunShellScript" \
+            --parameters '{"commands":["cd /opt/o-daria && docker compose pull api && docker compose up -d --no-deps api"]}' \
+            --output text \
+            --query "Command.CommandId")
+          echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
+
+      - name: Wait for SSM command to complete
+        run: |
+          aws ssm wait command-executed \
+            --command-id "${{ steps.ssm.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
+
+      - name: Check command result
+        run: |
+          STATUS=$(aws ssm get-command-invocation \
+            --command-id "${{ steps.ssm.outputs.command_id }}" \
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --query "Status" \
+            --output text)
+          echo "SSM command status: $STATUS"
+          [ "$STATUS" = "Success" ]

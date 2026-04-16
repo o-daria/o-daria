@@ -119,6 +119,12 @@ resource "aws_iam_instance_profile" "be" {
   role = aws_iam_role.be.name
 }
 
+# SSM managed instance core — enables SSM Session Manager (no port 22 needed)
+resource "aws_iam_role_policy_attachment" "ssm_core" {
+  role       = aws_iam_role.be.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+}
+
 # ── EC2 instance — t3.micro (x86_64, free tier eligible) ─────────────────────
 
 resource "aws_instance" "be" {
@@ -174,6 +180,7 @@ resource "aws_eip" "be" {
 
 # ── Outputs ───────────────────────────────────────────────────────────────────
 
-output "public_ip"  { value = aws_eip.be.public_ip }
-output "public_dns" { value = aws_eip.be.public_dns }
-output "instance_id" { value = aws_instance.be.id }
+output "public_ip"    { value = aws_eip.be.public_ip }
+output "public_dns"   { value = aws_eip.be.public_dns }
+output "instance_id"  { value = aws_instance.be.id }
+output "instance_arn" { value = aws_instance.be.arn }

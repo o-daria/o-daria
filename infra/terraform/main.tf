@@ -47,11 +47,12 @@ module "cloudfront" {
 }
 
 module "iam_deploy" {
-  source      = "./modules/iam-deploy"
-  app_name    = var.app_name
-  env         = var.environment
-  bucket_arn  = module.s3_hosting.bucket_arn
-  cf_dist_arn = module.cloudfront.distribution_arn
+  source           = "./modules/iam-deploy"
+  app_name         = var.app_name
+  env              = var.environment
+  bucket_arn       = module.s3_hosting.bucket_arn
+  cf_dist_arn      = module.cloudfront.distribution_arn
+  ec2_instance_arn = module.ec2_be.instance_arn
 }
 
 # ── Backend: EC2 + S3 images ──────────────────────────────────────────────────
