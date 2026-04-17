@@ -9,6 +9,17 @@ variable "external_api_domain" {
   description = "API domain for CSP connect-src. Defaults to wildcard; tighten after EC2 is provisioned."
 }
 
+variable "ec2_api_ip" {
+  type        = string
+  description = "Public DNS hostname of the EC2 BE instance. Used as CloudFront origin for /api/* path."
+}
+
+variable "ec2_api_port" {
+  type        = number
+  default     = 3300
+  description = "Port the API listens on."
+}
+
 # ── Security headers policy ───────────────────────────────────────────────────
 
 resource "aws_cloudfront_response_headers_policy" "security" {
@@ -39,6 +50,23 @@ resource "aws_cloudfront_response_headers_policy" "security" {
   }
 }
 
+# ── Origin request policy: forward Authorization + all query strings/cookies ──
+
+# ── CloudFront Function: strip /api prefix before forwarding to EC2 ──────────
+
+resource "aws_cloudfront_function" "strip_api_prefix" {
+  name    = "${var.app_name}-${var.env}-strip-api-prefix"
+  runtime = "cloudfront-js-2.0"
+  publish = true
+  code    = <<-EOF
+    async function handler(event) {
+      var request = event.request;
+      request.uri = request.uri.replace(/^\/api/, '') || '/';
+      return request;
+    }
+  EOF
+}
+
 # ── CloudFront distribution ───────────────────────────────────────────────────
 
 resource "aws_cloudfront_distribution" "app" {
@@ -51,6 +79,17 @@ resource "aws_cloudfront_distribution" "app" {
     domain_name              = var.s3_bucket_domain
     origin_id                = "s3-${var.s3_bucket_id}"
     origin_access_control_id = var.oac_id
+  }
+
+  origin {
+    domain_name = var.ec2_api_ip
+    origin_id   = "ec2-api"
+    custom_origin_config {
+      http_port              = var.ec2_api_port
+      https_port             = 443
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
+    }
   }
 
   # SPA fallback — shell handles all client-side routing
@@ -74,6 +113,23 @@ resource "aws_cloudfront_distribution" "app" {
     response_headers_policy_id = aws_cloudfront_response_headers_policy.security.id
     cache_policy_id            = "658327ea-f89d-4fab-a63d-7e88639e58f6" # CachingOptimized
     compress                   = true
+  }
+
+  # /api/* — proxy to EC2, no caching, strip /api prefix via CloudFront Function
+  ordered_cache_behavior {
+    path_pattern             = "/api/*"
+    allowed_methods          = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    cached_methods           = ["GET", "HEAD"]
+    target_origin_id         = "ec2-api"
+    viewer_protocol_policy   = "redirect-to-https"
+    cache_policy_id          = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad" # CachingDisabled
+    origin_request_policy_id = "216adef6-5c7f-47e4-b989-5492eafa07d3" # AllViewer
+    compress                 = false
+
+    function_association {
+      event_type   = "viewer-request"
+      function_arn = aws_cloudfront_function.strip_api_prefix.arn
+    }
   }
 
   # remoteEntry.js — no cache (Module Federation entry points must always be fresh)

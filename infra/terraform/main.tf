@@ -41,9 +41,7 @@ module "cloudfront" {
   s3_bucket_id     = module.s3_hosting.bucket_id
   s3_bucket_domain = module.s3_hosting.bucket_regional_domain
   oac_id           = module.s3_hosting.oac_id
-  # external_api_domain intentionally omitted — defaults to "*" to break the
-  # CloudFront ↔ EC2 circular dependency. After first apply, set this to
-  # "https://<ec2-public-dns>" and re-apply to tighten the CSP.
+  ec2_api_ip       = module.ec2_be.public_dns
 }
 
 module "iam_deploy" {
