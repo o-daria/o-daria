@@ -7,9 +7,31 @@ on:
       - "api/**"
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push linux/amd64 image
+        uses: docker/build-push-action@v6
+        with:
+          context: ./api
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/o-daria/o-daria-be:latest
+
   deploy:
     runs-on: ubuntu-latest
     environment: prod
+    needs: build
 
     steps:
       - name: Configure AWS credentials
@@ -25,7 +47,7 @@ jobs:
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters '{"commands":["ls -la /opt/o-daria/; cat /opt/o-daria/.env 2>/dev/null || echo NO_ENV; docker compose -f /opt/o-daria/docker-compose.yml ps 2>&1; docker compose -f /opt/o-daria/docker-compose.yml pull api 2>&1 | tail -20"]}' \
+            --parameters '{"commands":["set -e; cd /opt/o-daria && docker compose pull api && docker compose up -d --no-deps api"]}' \
             --output text \
             --query "Command.CommandId")
 
@@ -41,9 +63,7 @@ jobs:
             --command-id "${{ steps.ssm.outputs.command_id }}" \
             --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
             --cli-read-timeout 0 \
-            --cli-connect-timeout 60 || true
-
-          # Always check the result regardless of wait status
+            --cli-connect-timeout 60
 
       - name: Check command result
         run: |
