@@ -119,10 +119,6 @@ app.get('/projects', authenticate, async (req, res) => {
     [req.tenantId]
   );
 
-  if (result.rows.length === 0) {
-    return res.status(404).json({ error: 'Project not found' });
-  }
-
   res.json(result.rows.map((row) => ({
     projectId:    row.id,
     brandName:    row.brand_name,
