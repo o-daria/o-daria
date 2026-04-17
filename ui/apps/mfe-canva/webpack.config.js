@@ -41,7 +41,10 @@ module.exports = (_env, argv) => {
         },
       }),
       new HtmlWebpackPlugin({ template: "./index.html" }),
-      new DefinePlugin({ "process.env.NODE_ENV": JSON.stringify(isProd ? "production" : "development") }),
+      new DefinePlugin({
+        "process.env.NODE_ENV": JSON.stringify(isProd ? "production" : "development"),
+        "import.meta.env.VITE_API_BASE_URL": JSON.stringify(process.env.VITE_API_BASE_URL ?? "/api"),
+      }),
     ],
     devServer: { port: 3004, historyApiFallback: true, hot: true, headers: { "Access-Control-Allow-Origin": "*" }, static: { directory: path.resolve(__dirname, "public") } },
   };
