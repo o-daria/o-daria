@@ -50,12 +50,16 @@ const allowedOrigins = [
   ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
 ];
 
+const allowedOriginPatterns = [
+  /^https:\/\/[a-z0-9]+\.cloudfront\.net$/,
+];
+
 app.use(cors({
   origin(origin, callback) {
     // allow non-browser tools like curl/postman with no Origin header
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || allowedOriginPatterns.some(p => p.test(origin))) {
       return callback(null, true);
     }
 
@@ -105,7 +109,8 @@ app.post('/projects', authenticate, async (req, res) => {
       created_at: now,
     })
   } catch (error) {
-    res.status(500);
+    console.error('[App] POST /projects error:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 

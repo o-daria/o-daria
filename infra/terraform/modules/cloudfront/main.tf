@@ -44,7 +44,7 @@ resource "aws_cloudfront_response_headers_policy" "security" {
     }
     content_security_policy {
       # connect-src includes accounts.google.com for Google Sign-In token exchange
-      content_security_policy = "default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' ${var.external_api_domain} https://accounts.google.com; img-src 'self' data: https://lh3.googleusercontent.com; frame-src https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+      content_security_policy = "default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' ${var.external_api_domain} https://accounts.google.com; img-src 'self' data: https://lh3.googleusercontent.com; frame-src https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
       override                = true
     }
   }
