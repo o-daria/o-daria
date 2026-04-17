@@ -45,7 +45,7 @@ export function useDeleteProject() {
 export function useStartAnalysis(project: Project) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (files: File[]) => ProjectsApiService.startAnalysis({ brand: project.brandName, brand_input: project.brandDna }, files),
+    mutationFn: (files: File[]) => ProjectsApiService.startAnalysis({ brand: project.brandName, brand_input: project.brandDna, project_id: project.projectId }, files),
     onSuccess: () => qc.invalidateQueries({ queryKey: KEYS.detail(project.projectId) }),
   });
 }

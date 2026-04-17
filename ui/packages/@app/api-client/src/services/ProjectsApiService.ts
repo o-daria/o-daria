@@ -23,13 +23,14 @@ export const ProjectsApiService = {
     return data;
   },
 
-  async startAnalysis({ brand_input, brand }: { brand_input: string, brand: string }, files: File[]): Promise<StartAnalysisResponse> {
+  async startAnalysis({ brand_input, brand, project_id }: { brand_input: string, brand: string, project_id: string }, files: File[]): Promise<StartAnalysisResponse> {
     const formData = new FormData();
     for (const file of files) {
       formData.append("files", file);
     }
     formData.append("brand_input", brand_input);
     formData.append("brand", brand);
+    formData.append("project_id", project_id);
     formData.append("sync", "true");
     const { data } = await apiClient.post<StartAnalysisResponse>("/reports", formData, {
       headers: {
