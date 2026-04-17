@@ -35,16 +35,20 @@ data "aws_iam_policy_document" "deploy" {
   }
 
   statement {
-    sid    = "SSMDeployBE"
+    sid    = "SSMSendCommand"
     effect = "Allow"
-    actions = [
-      "ssm:SendCommand",
-      "ssm:GetCommandInvocation",
-    ]
+    actions = ["ssm:SendCommand"]
     resources = [
       var.ec2_instance_arn,
       "arn:aws:ssm:*::document/AWS-RunShellScript",
     ]
+  }
+
+  statement {
+    sid       = "SSMGetCommandInvocation"
+    effect    = "Allow"
+    actions   = ["ssm:GetCommandInvocation"]
+    resources = ["*"]
   }
 
   statement {

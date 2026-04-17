@@ -1,13 +1,8 @@
 import axios from "axios";
 import type { GoogleAuthResponse } from "./types";
 
-const BASE_URL =
-  typeof import.meta !== "undefined"
-    ? (import.meta.env?.VITE_API_BASE_URL ?? "")
-    : "";
-
 const authHttp = axios.create({
-  baseURL: BASE_URL,
+  baseURL: "/api",
 });
 
 /**

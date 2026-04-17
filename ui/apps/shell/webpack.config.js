@@ -67,6 +67,7 @@ module.exports = (_env, argv) => {
       new DefinePlugin({
         "process.env.NODE_ENV": JSON.stringify(isProd ? "production" : "development"),
         "process.env.GOOGLE_CLIENT_ID": JSON.stringify(process.env.GOOGLE_CLIENT_ID ?? ""),
+        "import.meta.env.VITE_API_BASE_URL": JSON.stringify(process.env.VITE_API_BASE_URL ?? "/api"),
       }),
     ],
     devServer: {

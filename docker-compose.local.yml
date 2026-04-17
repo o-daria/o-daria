@@ -50,6 +50,7 @@ services:
       PROFILES_DIR: /app/profiles
       # Allow nginx to call the API (CORS)
       FRONTEND_URL: http://localhost:8080
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
     volumes:
       - ./api/profiles:/app/profiles
     depends_on:
