@@ -25,16 +25,25 @@ jobs:
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters '{"commands":["cd /opt/o-daria && docker compose pull api && docker compose up -d --no-deps api"]}' \
+            --parameters '{"commands":["which docker || echo NO_DOCKER; docker --version || true; ls /opt/o-daria/ || echo NO_DIR; docker compose version || true; cat /var/log/cloud-init-output.log | tail -30"]}' \
             --output text \
             --query "Command.CommandId")
+
+          if [ -z "$COMMAND_ID" ]; then
+            echo "Failed to send command"
+            exit 1
+          fi
           echo "command_id=$COMMAND_ID" >> "$GITHUB_OUTPUT"
 
       - name: Wait for SSM command to complete
         run: |
           aws ssm wait command-executed \
             --command-id "${{ steps.ssm.outputs.command_id }}" \
-            --instance-id "${{ secrets.EC2_INSTANCE_ID }}"
+            --instance-id "${{ secrets.EC2_INSTANCE_ID }}" \
+            --cli-read-timeout 0 \
+            --cli-connect-timeout 60 || true
+
+          # Always check the result regardless of wait status
 
       - name: Check command result
         run: |
