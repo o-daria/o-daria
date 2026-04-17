@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 # Apply schema changes to an existing database.
 #
 # Usage:
