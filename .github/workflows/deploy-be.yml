@@ -51,7 +51,7 @@ jobs:
           COMMAND_ID=$(aws ssm send-command \
             --instance-ids "${{ secrets.EC2_INSTANCE_ID }}" \
             --document-name "AWS-RunShellScript" \
-            --parameters '{"commands":["set -e; cd /opt/o-daria && docker compose pull api && docker compose up -d --no-deps api"]}' \
+            --parameters "{\"commands\":[\"set -e; grep -q '^S3_IMAGES_BUCKET=' /opt/o-daria/.env && sed -i 's|^S3_IMAGES_BUCKET=.*|S3_IMAGES_BUCKET=${{ secrets.S3_BUCKET }}|' /opt/o-daria/.env || echo 'S3_IMAGES_BUCKET=${{ secrets.S3_BUCKET }}' >> /opt/o-daria/.env; cd /opt/o-daria && docker compose pull api && docker compose up -d --no-deps api\"]}" \
             --output text \
             --query "Command.CommandId")
 
