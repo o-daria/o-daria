@@ -89,17 +89,11 @@ app.post('/projects', authenticate, async (req, res) => {
   const now = new Date();
 
   try {
-    const result = await query(
+    await query(
       `INSERT INTO projects
-        (id, tenant_id, brand_name, brand_dna_raw, created_at, user_id)
-      VALUES ($1, $2, $3, $4, $5, '108')`,
-      [
-        id,
-        req.tenantId,
-        brand,
-        brand_input,
-        now
-      ]
+        (id, tenant_id, brand_name, brand_dna_raw, created_at)
+      VALUES ($1, $2, $3, $4, $5)`,
+      [id, req.tenantId, brand, brand_input, now]
     );
 
     res.status(200).json({
