@@ -10,7 +10,10 @@ import crypto from "crypto";
 
 const CANVA_TOKEN_URL = "https://api.canva.com/rest/v1/oauth/token";
 const CANVA_AUTH_BASE = "https://www.canva.com/api/oauth/authorize";
-const CANVA_REDIRECT_URI = "http://127.0.0.1:3300/canva/auth/callback";
+const CANVA_REDIRECT_URI = process.env.CANVA_REDIRECT_URI
+  ?? (process.env.FRONTEND_URL
+    ? `${process.env.FRONTEND_URL}/api/canva/auth/callback`
+    : "http://127.0.0.1:3300/canva/auth/callback");
 const CANVA_SCOPES = [
   "design:content:write",
   "design:meta:read",
